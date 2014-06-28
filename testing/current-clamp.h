@@ -17,9 +17,9 @@
  */
 
 #include <default_gui_model.h>
-#include "include/scatterplot.h"
-#include "include/runningstat.h"
-#include "include/RTXIprintfilter.h"
+#include <scatterplot.h>
+#include <runningstat.h>
+#include <RTXIprintfilter.h>
 #include <QtGui>
 
 class Clamp : public DefaultGUIModel
@@ -33,10 +33,9 @@ public:
   virtual
   ~Clamp(void);
 
-  void
-  execute(void);
-  void
-  createGUI(DefaultGUIModel::variable_t *, int);
+  void execute(void);
+//	void createGUI(DefaultGUIModel::variable_t *, int);
+	void customizeGUI(void);
 
   //Custom flags for clamp mode
   enum mode_t

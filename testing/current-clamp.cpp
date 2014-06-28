@@ -251,24 +251,29 @@ Clamp::update(DefaultGUIModel::update_flags_t flag)
 
 }
 
-void
-Clamp::createGUI(DefaultGUIModel::variable_t *var, int size)
+void Clamp::customizeGUI(void) {
 {
-
-  setMinimumSize(200, 300); // Qt API for setting window size
+	QGridLayout *customlayout = DefaultGUIModel::getLayout(); 
 
   //overall GUI layout with a "horizontal box" copied from DefaultGUIModel
-  QBoxLayout *layout = new QHBoxLayout(this);
-
-  // left and right panels
-  // Right side GUI with buttons and FI plot
-  QBoxLayout *rightlayout = new QVBoxLayout();
-  QHButtonGroup *plotBox = new QHButtonGroup("FI Plot:", this);
-  QPushButton *clearButton = new QPushButton("&Clear", plotBox);
-  QPushButton *linearfitButton = new QPushButton("Linear &Fit", plotBox);
-  QPushButton *savePlotButton = new QPushButton("Save Screenshot", plotBox);
-  QPushButton *printButton = new QPushButton("Print", plotBox);
-  QPushButton *saveDataButton = new QPushButton("Save FI Data", plotBox);
+  QWidget *right = new QWidget;
+  QVBoxLayout *rightlayout = new QVBoxLayout;
+  right->setLayout(rightLayout);
+  QGroupBox *plotBox = new QGroupbox("FI Plot");
+  QHBoxLayout *plotBoxLayout = new QHBoxLayout;
+  plotBox->setLayout(plotBoxLayout);
+  
+//  QBoxLayout *rightlayout = new QVBoxLayout();
+  QPushButton *clearButton = new QPushButton("&Clear");
+  QPushButton *linearfitButton = new QPushButton("Linear &Fit");
+  QPushButton *savePlotButton = new QPushButton("Save Screenshot");
+  QPushButton *printButton = new QPushButton("Print");
+  QPushButton *saveDataButton = new QPushButton("Save FI Data");
+  plotBoxLayout->addWidget(clearButton);
+  plotBoxLayout->addWidget(linearfitButton);
+  plotBoxLayout->addWidget(printButton);
+  plotBoxLayout->addWidget(savePlotButton);
+  plotBoxLayout->addWidget(saveDataButton);
   QLineEdit *eqnLine = new QLineEdit(this, "Linear Equation");
   eqnLine->setText("Y = c0 + c1 * X");
   eqnLine->setFrame(false);
@@ -280,11 +285,11 @@ Clamp::createGUI(DefaultGUIModel::variable_t *var, int size)
   QObject::connect(printButton, SIGNAL(clicked()), this, SLOT(print()));
   QObject::connect(saveDataButton, SIGNAL(clicked()), this, SLOT(saveFIData()));
   QObject::connect(linearfitButton, SIGNAL(clicked()), this, SLOT(fitData()));
-  QToolTip::add(clearButton, "Clear");
-  QToolTip::add(savePlotButton, "Save screenshot");
-  QToolTip::add(saveDataButton, "Save data");
-  QToolTip::add(linearfitButton, "Perform linear least-squares regression");
-  QToolTip::add(printButton, "Print plot");
+  clearButton->addToolTip(clearButton, "Clear");
+  savePlotButton->addToolTip("Save screenshot");
+  saveDataButton->addToolTip("Save data");
+  linearfitButton->addToolTip("Perform linear least-squares regression");
+  printButton->addToolTip("Print plot");
 
   rightlayout->addWidget(plotBox);
   rightlayout->addWidget(eqnLine);
@@ -293,31 +298,36 @@ Clamp::createGUI(DefaultGUIModel::variable_t *var, int size)
   eqnLine->hide();
   splot->setFixedSize(540, 300);
   splot->hide();
+  customlayout->addWidget(right, 0, 1, 10, 1);
 
-  QBoxLayout *leftlayout = new QVBoxLayout();
-
-  QHButtonGroup *modeBox = new QHButtonGroup("Clamp Mode", this);
-  modeBox->setRadioButtonExclusive(true);
+  QButtonGroup *modeBox = new QButtonGroup("Clamp Mode");
+  modeBox->setExclusive(true);
   QRadioButton *stepButton = new QRadioButton("Step", modeBox);
   stepButton->setChecked(true);
   QRadioButton *rampButton = new QRadioButton("Ramp", modeBox);
   QObject::connect(modeBox,SIGNAL(clicked(int)),this,SLOT(updateClampMode(int)));
-  QToolTip::add(stepButton, "Set mode to current steps");
-  QToolTip::add(rampButton, "Set mode to triangular current ramps");
+  stepButton->addToolTip("Set mode to current steps");
+  rampButton->addToolTip("Set mode to triangular current ramps");
+  customlayout->addWidget(modeBox, 0, 0);
 
-  QVBox *optionBox = new QVBox(this);
-  QHBox *optionRow1 = new QHBox(optionBox);
-  QCheckBox *randomCheckBox = new QCheckBox("Randomize", optionRow1);
-  QHBox *optionRow2 = new QHBox(optionBox);
-  QCheckBox *plotFICheckBox = new QCheckBox("Plot FI Curve", optionRow2);
+  QWidget *optionBox = new QWidget;
+  QVBoxLayout *optionBoxLayout = new QVBoxLayout;
+  optionBox->setLayout(optionBoxLayout);
+//  QHBox *optionRow1 = new QHBox(optionBox);
+  QCheckBox *randomCheckBox = new QCheckBox("Randomize");
+  optionBoxLayout->addWidget(randomCheckBox);
+//  QHBox *optionRow2 = new QHBox(optionBox);
+  QCheckBox *plotFICheckBox = new QCheckBox("Plot FI Curve");
+  optionBoxLayout->addWidget(plotFICheckBox);
   QObject::connect(randomCheckBox,SIGNAL(toggled(bool)),this,SLOT(togglerandom(bool)));
   QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),eqnLine,SLOT(setShown(bool)));
   QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),splot,SLOT(setShown(bool)));
   QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),plotBox,SLOT(setShown(bool)));
   QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),this,SLOT(toggleFIplot(bool)));
-  QToolTip::add(randomCheckBox, "Randomize input amplitudes within a cycle");
-  QToolTip::add(plotFICheckBox, "Show/Hide FI plot area");
-
+  randomCheckBox->addToolTip("Randomize input amplitudes within a cycle");
+  plotFICheckBox->addToolTip("Show/Hide FI plot area");
+  customlayout->addWidget(optionBox, 3, 0);
+/*
   QHBox *utilityBox = new QHBox(this);
   pauseButton = new QPushButton("Pause", utilityBox);
   pauseButton->setToggleButton(true);
@@ -334,7 +344,7 @@ Clamp::createGUI(DefaultGUIModel::variable_t *var, int size)
   QToolTip::add(pauseButton, "Start/Stop current clamp protocol");
   QToolTip::add(modifyButton, "Commit changes to parameter values");
   QToolTip::add(unloadButton, "Close module");
-
+*/
   QObject::connect(this,SIGNAL(newDataPoint(double,double)),splot,SLOT(appendPoint(double,double)));
   QObject::connect(this,SIGNAL(setFIRange(double, double, double, double)),splot,SLOT(setAxes(double, double, double, double)));
   QObject::connect(this,SIGNAL(setPlotMode(bool)),plotFICheckBox,SLOT(setChecked(bool)));
@@ -346,87 +356,16 @@ Clamp::createGUI(DefaultGUIModel::variable_t *var, int size)
   // add custom button group at the top of the layout
   leftlayout->addWidget(modeBox);
 
-  // create default_gui_model GUI DO NOT EDIT
-  QScrollView *sv = new QScrollView(this);
-  sv->setResizePolicy(QScrollView::AutoOneFit);
-  leftlayout->addWidget(sv);
-
-  QWidget *viewport = new QWidget(sv->viewport());
-  sv->addChild(viewport);
-  QGridLayout *scrollLayout = new QGridLayout(viewport, 1, 2);
-
-  size_t nstate = 0, nparam = 0, nevent = 0, ncomment = 0;
-  for (size_t i = 0; i < num_vars; i++)
-    {
-      if (vars[i].flags & (PARAMETER | STATE | EVENT | COMMENT))
-        {
-          param_t param;
-
-          param.label = new QLabel(vars[i].name, viewport);
-          scrollLayout->addWidget(param.label, parameter.size(), 0);
-          param.edit = new DefaultGUILineEdit(viewport);
-          scrollLayout->addWidget(param.edit, parameter.size(), 1);
-
-          QToolTip::add(param.label, vars[i].description);
-          QToolTip::add(param.edit, vars[i].description);
-
-          if (vars[i].flags & PARAMETER)
-            {
-              if (vars[i].flags & DOUBLE)
-                {
-                  param.edit->setValidator(new QDoubleValidator(param.edit));
-                  param.type = PARAMETER | DOUBLE;
-                }
-              else if (vars[i].flags & UINTEGER)
-                {
-                  QIntValidator *validator = new QIntValidator(param.edit);
-                  param.edit->setValidator(validator);
-                  validator->setBottom(0);
-                  param.type = PARAMETER | UINTEGER;
-                }
-              else if (vars[i].flags & INTEGER)
-                {
-                  param.edit->setValidator(new QIntValidator(param.edit));
-                  param.type = PARAMETER | INTEGER;
-                }
-              else
-                param.type = PARAMETER;
-              param.index = nparam++;
-              param.str_value = new QString;
-            }
-          else if (vars[i].flags & STATE)
-            {
-              param.edit->setReadOnly(true);
-              param.edit->setPaletteForegroundColor(Qt::darkGray);
-              param.type = STATE;
-              param.index = nstate++;
-            }
-          else if (vars[i].flags & EVENT)
-            {
-              param.edit->setReadOnly(true);
-              param.type = EVENT;
-              param.index = nevent++;
-            }
-          else if (vars[i].flags & COMMENT)
-            {
-              param.type = COMMENT;
-              param.index = ncomment++;
-            }
-
-          parameter[vars[i].name] = param;
-        }
-    }
-
-  // end default_gui_model GUI DO NOT EDIT
-
-  leftlayout->addWidget(optionBox);
-  leftlayout->addWidget(utilityBox);
+//  leftlayout->addWidget(optionBox);
+//  leftlayout->addWidget(utilityBox);
   // Add left and right side layouts to the overall layout
-  layout->addLayout(leftlayout);
-  layout->addLayout(rightlayout);
-  layout->setResizeMode(QLayout::Fixed);
+//  layout->addLayout(leftlayout);
+//  layout->addLayout(rightlayout);
+//  layout->setResizeMode(QLayout::Fixed);
 
-  show(); // this line is required to render the GUI
+	setLayout(customlayout);
+
+  ; // this line is required to render the GUI
 }
 
 void
