@@ -3,13 +3,13 @@
 **Requirements:** GSL, Qwt, SpikeDetect plugin, Plot helper classes, Running Statistics class (included)  
 **Limitations:** None  
 
-![EDIT THIS LINK](http://www.rtxi.org/wp-content/uploads/2010/02/CClamp3.JPG)
+![Current Clamp GUI](current-clamp.png)
 
 This plugin allows you to deliver a protocol for current step or current ramp inputs. You can randomize the order of amplitudes used and repeat the entire protocol a certain number of times. For current step inputs, you can also choose to plot the f-I curve as it is generated. For each complete cycle through all the command currents, the plot symbol will change. The firing rate is computed by taking the reciprocal of the average ISI detected during a command input. Plotting the f-I curve will also enable buttons that allow you to perform a linear regression, print the plot, save a screenshot in SVG format, or save the data points. Only the data points generated in the last run are saved and you can append them to an existing file. The linear regression is performed on ALL data points in the plot, not just those generated in the last run. If you add points to the plot and perform another regression, you will get another line. Zoom in on the plot by clicking and dragging with the mouse. Middle click to go back to the previous zoom. All the data points and coefficients and statistics for each regression are printed to the terminal.
 
 ####Usage/Dependencies/Installation:
 
-The include folder (containing the ScatterPlot, IncrementalPlot, ScrollBar, ScrollZoomer, and RunningStat classes) should be located on the same directory level as CClamp3. The [GPL GSL library](http://www.gnu.org/software/gsl/) is used to perform a linear regression on data points. If you installed RTXI from a Live CD, you should already have GSL. If you did a manual installation of RTXI, you should install GSL using your Linux distribution’s package manager. In Ubuntu, the package manager can be found in the toolbar under Administration. Alternatively, in Ubuntu 8.04/8.10/9.04/9.10, you can type
+The include folder (containing the ScatterPlot, IncrementalPlot, ScrollBar, ScrollZoomer, and RunningStat classes) should be located on the same directory level as CClamp3. The [GPL GSL library](http://www.gnu.org/software/gsl/) is used to perform a linear regression on data points. If you installed RTXI from a Live CD, you should already have GSL. If you did a manual installation of RTXI, you should install GSL using your Linux distribution’s package manager. In Ubuntu, the package manager can be found in the toolbar under Administration. Alternatively, you can install via the apt repository by running:
 
 ````
 $ sudo apt-get install libgsl0-dev

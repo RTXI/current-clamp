@@ -19,27 +19,23 @@
 #include <default_gui_model.h>
 #include <scatterplot.h>
 #include <runningstat.h>
-#include <RTXIprintfilter.h>
+//#include <RTXIprintfilter.h>
 #include <QtGui>
 
-class Clamp : public DefaultGUIModel
-{
+class Clamp : public DefaultGUIModel {
 
 Q_OBJECT
 
 public:
-
   Clamp(void);
-  virtual
-  ~Clamp(void);
+  virtual ~Clamp(void);
 
   void execute(void);
 //	void createGUI(DefaultGUIModel::variable_t *, int);
-	void customizeGUI(void);
+  void customizeGUI(void);
 
   //Custom flags for clamp mode
-  enum mode_t
-  {
+  enum mode_t {
     RAMP, STEP,
   };
 
@@ -48,26 +44,17 @@ public slots:
   signals: // custom signals
 
   void setFIRange(double newminamp, double newmaxamp, double minHz, double maxHz);
-  void
-  newDataPoint(double newx, double newy);
-  void
-  setStepMode(bool);
-  void
-  setPlotMode(bool);
-  void
-  saveImage(QString fileName);
-  void
-  drawFit(double* x, double* y, int size);
-  void
-  setEqnMsg(const QString &);
+  void newDataPoint(double newx, double newy);
+  void setStepMode(bool);
+  void setPlotMode(bool);
+  void saveImage(QString fileName);
+  void drawFit(double* x, double* y, int size);
+  void setEqnMsg(const QString &);
 
 protected:
-
-  virtual void
-  update(DefaultGUIModel::update_flags_t);
+  virtual void update(DefaultGUIModel::update_flags_t);
 
 private:
-
   // inputs, states, calculated values
   double systime;
   double Vm;
@@ -109,34 +96,21 @@ private:
   ScatterPlot *splot;
 
   // Clamp functions
-  void
-  initParameters();
-  void
-  initStepArray();
-  void
-  bookkeep();
-  void
-  countspikes();
-  bool
-  OpenFile(QString);
+  void initParameters();
+  void initStepArray();
+  void bookkeep();
+  void countspikes();
+  bool OpenFile(QString);
   QFile dataFile;
   QDataStream stream;
 
 private slots:
-
   void togglerandom(bool);
-  void
-  updateClampMode(int);
-  void
-  toggleFIplot(bool);
-  void
-  saveFIData();
-  void
-  fitData();
-  void
-  print();
-  void
-  exportSVG();
-  void
-  clearData();
+  void updateClampMode(int);
+  void toggleFIplot(bool);
+  void saveFIData();
+  void fitData();
+  void print();
+  void exportSVG();
+  void clearData();
 };

@@ -39,9 +39,7 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_statistics_double.h>
 
-extern "C" Plugin::Object *
-createRTXIPlugin(void)
-{
+extern "C" Plugin::Object *createRTXIPlugin(void) {
   return new Clamp();
 }
 
@@ -62,39 +60,31 @@ static DefaultGUIModel::variable_t vars[] =
         | DefaultGUIModel::DOUBLE, },
     { "Repeat", "Number of times to repeat cycle", DefaultGUIModel::PARAMETER
         | DefaultGUIModel::DOUBLE, },
-    { "Time (s)", "Time (s)", DefaultGUIModel::STATE, }, };
+    { "Time (s)", "Time (s)", DefaultGUIModel::STATE, }, 
+};
 
 static size_t num_vars = sizeof(vars) / sizeof(DefaultGUIModel::variable_t);
 
-Clamp::Clamp(void) :
-  DefaultGUIModel("Current Clamp", ::vars, ::num_vars)
-{
+Clamp::Clamp(void) :  DefaultGUIModel("Current Clamp", ::vars, ::num_vars) {
 
   setWhatsThis(
       "<p><b>Current Clamp</b></p><p>This plugin requires the SpikeDetect plugin, which indicates when a spike has occurred using a threshold method. This plugin allows you to deliver current steps or ramps. Choose the <b>Clamp Mode</b>, then set the parameters for the input amplitudes and step size. This plugin uses an absolute delay between the end of a command input and the beginning of the next command. You can repeat the series of command inputs as many times as you like. Use the <b>Randomize</b> checkbox to randomize amplitudes within each cycle. To run a current clamp protocol, toggle the <b>Pause</b> button. You can edit parameter values directly in the textboxes, but you must click <b>Modify</b> to commit the changes. In <b>Step Mode</b>, you can choose to plot the FI Curve as it is generated and save a screenshot of the plot or save the data to a plain text file. The frequency is computed by averaging all the ISIs detected during a command step and taking the reciprocal. A linear fit is performed on all data points currently displayed in the scatterplot, not simply the data points acquired in the last run. Saving data points to a file will only save the data points acquired in the last run. You can completely overwrite or append the data to an existing file.</p>");
   initParameters();
   initStepArray();
-  createGUI(vars, num_vars); // this is required to create the GUI
+  DefaultGUIModel::createGUI(vars, num_vars); // this is required to create the GUI
+  customizeGUI();
   update(INIT);
   refresh(); // this is required to update the GUI with parameter and state values
   printf("Loaded Current Clamp:\n");
-
 }
 
-Clamp::~Clamp(void)
-{
-}
+Clamp::~Clamp(void) {}
 
-void
-Clamp::execute(void)
-{
-  if (plotFI == true)
-    {
-      spikestate = input(0);
-    }
+void Clamp::execute(void) {
+  if (plotFI == true) spikestate = input(0);
   systime = count * dt; // current time, s
 
-  if (cyclecount < repeat)
+  if (cyclecount < repeat) 
     { // as long as there are cycles remaining
       if (stepcount == 0 && randomize == true && random == false)
         { // shuffle amplitudes once at beginning of each cycle
@@ -186,11 +176,8 @@ Clamp::execute(void)
   return;
 }
 
-void
-Clamp::update(DefaultGUIModel::update_flags_t flag)
-{
-  switch (flag)
-    {
+void Clamp::update(DefaultGUIModel::update_flags_t flag) {
+  switch (flag) {
   case INIT:
     setParameter("Min Amplitude (pA)", QString::number(minamp * 1e12)); // initialized in A, display in pA
     setParameter("Max Amplitude (pA)", QString::number(maxamp * 1e12)); // initialized in A
@@ -199,7 +186,7 @@ Clamp::update(DefaultGUIModel::update_flags_t flag)
     setParameter("Width (s)", QString::number(width)); //
     setParameter("Repeat", QString::number(repeat)); // initially 1
     setState("Time (s)", systime);
-    //emit setFIRange(minamp * 1e12, maxamp * 1e12, yrangemin, yrangemax);
+    emit setFIRange(minamp * 1e12, maxamp * 1e12, yrangemin, yrangemax);
     break;
   case MODIFY:
     delay = getParameter("Delay (s)").toDouble();
@@ -223,7 +210,7 @@ Clamp::update(DefaultGUIModel::update_flags_t flag)
     initStepArray();
     emit setFIRange(minamp * 1e12, maxamp * 1e12, yrangemin, yrangemax);
     eqnmsg = "Y = c0 + c1 * X";
-    //emit setEqnMsg(eqnmsg);
+    emit setEqnMsg(eqnmsg);
     bookkeep();
     break;
   case UNPAUSE:
@@ -246,24 +233,18 @@ Clamp::update(DefaultGUIModel::update_flags_t flag)
     break;
   default:
     break;
-
-    }
-
+  }
 }
 
 void Clamp::customizeGUI(void) {
-{
-	QGridLayout *customlayout = DefaultGUIModel::getLayout(); 
+
+  QGridLayout *customlayout = DefaultGUIModel::getLayout(); 
 
   //overall GUI layout with a "horizontal box" copied from DefaultGUIModel
-  QWidget *right = new QWidget;
-  QVBoxLayout *rightlayout = new QVBoxLayout;
-  right->setLayout(rightLayout);
-  QGroupBox *plotBox = new QGroupbox("FI Plot");
+  QGroupBox *plotBox = new QGroupBox("FI Plot");
   QHBoxLayout *plotBoxLayout = new QHBoxLayout;
   plotBox->setLayout(plotBoxLayout);
   
-//  QBoxLayout *rightlayout = new QVBoxLayout();
   QPushButton *clearButton = new QPushButton("&Clear");
   QPushButton *linearfitButton = new QPushButton("Linear &Fit");
   QPushButton *savePlotButton = new QPushButton("Save Screenshot");
@@ -274,10 +255,11 @@ void Clamp::customizeGUI(void) {
   plotBoxLayout->addWidget(printButton);
   plotBoxLayout->addWidget(savePlotButton);
   plotBoxLayout->addWidget(saveDataButton);
-  QLineEdit *eqnLine = new QLineEdit(this, "Linear Equation");
+  QLineEdit *eqnLine = new QLineEdit("Linear Equation");
   eqnLine->setText("Y = c0 + c1 * X");
   eqnLine->setFrame(false);
   splot = new ScatterPlot(this);
+
   // Connect buttons to functions
   QObject::connect(clearButton, SIGNAL(clicked()), splot, SLOT(clear()));
   QObject::connect(clearButton, SIGNAL(clicked()), this, SLOT(clearData()));
@@ -285,38 +267,40 @@ void Clamp::customizeGUI(void) {
   QObject::connect(printButton, SIGNAL(clicked()), this, SLOT(print()));
   QObject::connect(saveDataButton, SIGNAL(clicked()), this, SLOT(saveFIData()));
   QObject::connect(linearfitButton, SIGNAL(clicked()), this, SLOT(fitData()));
-  clearButton->addToolTip(clearButton, "Clear");
-  savePlotButton->addToolTip("Save screenshot");
-  saveDataButton->addToolTip("Save data");
-  linearfitButton->addToolTip("Perform linear least-squares regression");
-  printButton->addToolTip("Print plot");
+  clearButton->setToolTip("Clear");
+  savePlotButton->setToolTip("Save screenshot");
+  saveDataButton->setToolTip("Save data");
+  linearfitButton->setToolTip("Perform linear least-squares regression");
+  printButton->setToolTip("Print plot");
 
-  rightlayout->addWidget(plotBox);
-  rightlayout->addWidget(eqnLine);
-  rightlayout->addWidget(splot);
-  plotBox->hide();
-  eqnLine->hide();
+//  plotBox->hide();
+//  eqnLine->hide();
   splot->setFixedSize(540, 300);
-  splot->hide();
-  customlayout->addWidget(right, 0, 1, 10, 1);
+//  splot->hide();
+  customlayout->addWidget(plotBox, 0, 1, 1, 1);
+  customlayout->addWidget(eqnLine, 10, 1, 1, 1);
+  customlayout->addWidget(splot, 1, 1, 3, 1);
 
-  QButtonGroup *modeBox = new QButtonGroup("Clamp Mode");
-  modeBox->setExclusive(true);
-  QRadioButton *stepButton = new QRadioButton("Step", modeBox);
-  stepButton->setChecked(true);
-  QRadioButton *rampButton = new QRadioButton("Ramp", modeBox);
-  QObject::connect(modeBox,SIGNAL(clicked(int)),this,SLOT(updateClampMode(int)));
-  stepButton->addToolTip("Set mode to current steps");
-  rampButton->addToolTip("Set mode to triangular current ramps");
+  QGroupBox *modeBox = new QGroupBox("Clamp Mode");
+  QHBoxLayout *modeBoxLayout = new QHBoxLayout;
+  modeBox->setLayout(modeBoxLayout);
+  QButtonGroup *modeButtons = new QButtonGroup;
+  modeButtons->setExclusive(true);
+  QRadioButton *stepButton = new QRadioButton("Step");
+  modeBoxLayout->addWidget(stepButton);
+  modeButtons->addButton(stepButton);
+  stepButton->setEnabled(true);
+  QRadioButton *rampButton = new QRadioButton("Ramp"); 
+  modeBoxLayout->addWidget(rampButton);
+  modeButtons->addButton(rampButton);
+  QObject::connect(modeButtons,SIGNAL(buttonClicked(int)),this,SLOT(updateClampMode(int)));
+  stepButton->setToolTip("Set mode to current steps");
+  rampButton->setToolTip("Set mode to triangular current ramps");
   customlayout->addWidget(modeBox, 0, 0);
 
-  QWidget *optionBox = new QWidget;
   QVBoxLayout *optionBoxLayout = new QVBoxLayout;
-  optionBox->setLayout(optionBoxLayout);
-//  QHBox *optionRow1 = new QHBox(optionBox);
   QCheckBox *randomCheckBox = new QCheckBox("Randomize");
   optionBoxLayout->addWidget(randomCheckBox);
-//  QHBox *optionRow2 = new QHBox(optionBox);
   QCheckBox *plotFICheckBox = new QCheckBox("Plot FI Curve");
   optionBoxLayout->addWidget(plotFICheckBox);
   QObject::connect(randomCheckBox,SIGNAL(toggled(bool)),this,SLOT(togglerandom(bool)));
@@ -324,27 +308,19 @@ void Clamp::customizeGUI(void) {
   QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),splot,SLOT(setShown(bool)));
   QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),plotBox,SLOT(setShown(bool)));
   QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),this,SLOT(toggleFIplot(bool)));
-  randomCheckBox->addToolTip("Randomize input amplitudes within a cycle");
-  plotFICheckBox->addToolTip("Show/Hide FI plot area");
-  customlayout->addWidget(optionBox, 3, 0);
-/*
-  QHBox *utilityBox = new QHBox(this);
-  pauseButton = new QPushButton("Pause", utilityBox);
-  pauseButton->setToggleButton(true);
-  QObject::connect(pauseButton,SIGNAL(toggled(bool)),this,SLOT(pause(bool)));
-  QObject::connect(pauseButton,SIGNAL(toggled(bool)),savePlotButton,SLOT(setEnabled(bool)));
-  QObject::connect(pauseButton,SIGNAL(toggled(bool)),printButton,SLOT(setEnabled(bool)));
-  QObject::connect(pauseButton,SIGNAL(toggled(bool)),saveDataButton,SLOT(setEnabled(bool)));
-  QObject::connect(pauseButton,SIGNAL(toggled(bool)),linearfitButton,SLOT(setEnabled(bool)));
-  QPushButton *modifyButton = new QPushButton("Modify", utilityBox);
-  QObject::connect(modifyButton,SIGNAL(clicked(void)),this,SLOT(modify(void)));
-  QPushButton *unloadButton = new QPushButton("Unload", utilityBox);
-  QObject::connect(unloadButton,SIGNAL(clicked(void)),this,SLOT(exit(void)));
-  QObject::connect(pauseButton,SIGNAL(toggled(bool)),modifyButton,SLOT(setEnabled(bool)));
-  QToolTip::add(pauseButton, "Start/Stop current clamp protocol");
-  QToolTip::add(modifyButton, "Commit changes to parameter values");
-  QToolTip::add(unloadButton, "Close module");
-*/
+  randomCheckBox->setToolTip("Randomize input amplitudes within a cycle");
+  plotFICheckBox->setToolTip("Show/Hide FI plot area");
+  customlayout->addLayout(optionBoxLayout, 3, 0);
+
+  QObject::connect(DefaultGUIModel::pauseButton,SIGNAL(toggled(bool)),savePlotButton,SLOT(setEnabled(bool)));
+  QObject::connect(DefaultGUIModel::pauseButton,SIGNAL(toggled(bool)),printButton,SLOT(setEnabled(bool)));
+  QObject::connect(DefaultGUIModel::pauseButton,SIGNAL(toggled(bool)),saveDataButton,SLOT(setEnabled(bool)));
+  QObject::connect(DefaultGUIModel::pauseButton,SIGNAL(toggled(bool)),linearfitButton,SLOT(setEnabled(bool)));
+  QObject::connect(DefaultGUIModel::pauseButton,SIGNAL(toggled(bool)),DefaultGUIModel::modifyButton,SLOT(setEnabled(bool)));
+  DefaultGUIModel::pauseButton->setToolTip("Start/Stop current clamp protocol");
+  DefaultGUIModel::modifyButton->setToolTip("Commit changes to parameter values");
+  DefaultGUIModel::unloadButton->setToolTip("Close module");
+
   QObject::connect(this,SIGNAL(newDataPoint(double,double)),splot,SLOT(appendPoint(double,double)));
   QObject::connect(this,SIGNAL(setFIRange(double, double, double, double)),splot,SLOT(setAxes(double, double, double, double)));
   QObject::connect(this,SIGNAL(setPlotMode(bool)),plotFICheckBox,SLOT(setChecked(bool)));
@@ -353,24 +329,10 @@ void Clamp::customizeGUI(void) {
   QObject::connect(this,SIGNAL(drawFit(double*, double*, int)),splot,SLOT(appendLine(double*, double*, int)));
   QObject::connect(this,SIGNAL(setEqnMsg(const QString &)), eqnLine,SLOT(setText(const QString &)));
 
-  // add custom button group at the top of the layout
-  leftlayout->addWidget(modeBox);
-
-//  leftlayout->addWidget(optionBox);
-//  leftlayout->addWidget(utilityBox);
-  // Add left and right side layouts to the overall layout
-//  layout->addLayout(leftlayout);
-//  layout->addLayout(rightlayout);
-//  layout->setResizeMode(QLayout::Fixed);
-
 	setLayout(customlayout);
-
-  ; // this line is required to render the GUI
 }
 
-void
-Clamp::initParameters()
-{
+void Clamp::initParameters() {
   minamp = -100e-12; // A
   maxamp = 400e-12; // A
   stepsize = 50e-12; // A
@@ -387,38 +349,31 @@ Clamp::initParameters()
   nstep = int((maxamp + 1e-12 - minamp) / stepsize) + 1; // calculate the number of amplitude steps
   yrangemin = 0;
   yrangemax = 50;
-
 }
 
-void
-Clamp::initStepArray()
-{
+void Clamp::initStepArray() {
   arrstep = new double[nstep];
   arrrate = new double[nstep];
   arrFIamp = new double[static_cast<int> (nstep * repeat)];
   arrFIHz = new double[static_cast<int> (nstep * repeat)];
-  for (int i = 0; i < nstep * repeat; i++)
-    {
-      arrFIamp[i] = 0;
-      arrFIHz[i] = 0;
-    }
-  for (int i = 0; i < nstep; i++)
-    {
-      arrstep[i] = minamp + i * stepsize;
-      arrrate[i] = arrstep[i] / width * 2 * dt;
-    }
+  for (int i = 0; i < nstep * repeat; i++) {
+    arrFIamp[i] = 0;
+    arrFIHz[i] = 0;
+  }
+  for (int i = 0; i < nstep; i++) {
+    arrstep[i] = minamp + i * stepsize;
+    arrrate[i] = arrstep[i] / width * 2 * dt;
+  }
   random = false;
 }
 
-void
-Clamp::updateClampMode(int index)
-{
+void Clamp::updateClampMode(int index) {
   if (index == 0)
     { // STEP
       mode = STEP;
       update(MODIFY);
-      //emit setStepMode(true);
-      //emit setPlotMode(false);
+      emit setStepMode(true);
+      emit setPlotMode(false);
       printf("Entering STEP mode\n");
     }
   else if (index == 1)
@@ -427,15 +382,13 @@ Clamp::updateClampMode(int index)
       minamp = 0;
       setParameter("Min Amplitude (pA)", QString::number(minamp * 1e12)); // initialized in A, display in pA
       update(MODIFY);
-      //emit setStepMode(false);
+      emit setStepMode(false);
       plotFI = false;
       printf("Entering RAMP mode\n");
     }
 }
 
-void
-Clamp::bookkeep()
-{
+void Clamp::bookkeep() {
   stepcount = 0;
   cyclecount = 0;
   count = 0;
@@ -447,29 +400,26 @@ Clamp::bookkeep()
   ISI.clear();
 }
 
-void
-Clamp::clearData()
-{
+void Clamp::clearData() {
   yrangemax = 50;
-  //emit setFIRange(minamp * 1e12, maxamp * 1e12, yrangemin, yrangemax);
+  emit setFIRange(minamp * 1e12, maxamp * 1e12, yrangemin, yrangemax);
   eqnmsg = "Y = c0 + c1 * X";
-  //emit setEqnMsg(eqnmsg);
+  emit setEqnMsg(eqnmsg);
 }
 
-void
-Clamp::saveFIData()
-{
-  QFileDialog* fd = new QFileDialog(this, "Save File As", TRUE);
-  fd->setMode(QFileDialog::AnyFile);
+void Clamp::saveFIData() {
+  QFileDialog* fd = new QFileDialog(this, "Save File As");//, TRUE);
+  fd->setFileMode(QFileDialog::AnyFile);
   fd->setViewMode(QFileDialog::Detail);
   QString fileName;
   if (fd->exec() == QDialog::Accepted)
     {
-      fileName = fd->selectedFile();
+      QStringList fileNames = fd->selectedFiles();
+		if (!fileNames.isEmpty()) { fileName = fileNames.takeFirst(); };
 
       if (OpenFile(fileName))
         {
-          stream.setPrintableData(true);
+//          stream.setPrintableData(true);
           for (int i = 0; i < cyclecount * nstep + stepcount; i++)
             {
               stream << (double) arrFIamp[i] << (double) arrFIHz[i];
@@ -486,9 +436,7 @@ Clamp::saveFIData()
     }
 }
 
-void
-Clamp::fitData()
-{
+void Clamp::fitData() {
   if (splot->dataExists())
     {
       int n = splot->dataSize();
@@ -562,9 +510,7 @@ Clamp::fitData()
     }
 }
 
-void
-Clamp::countspikes()
-{
+void Clamp::countspikes() {
   spikecount++;
   prevspktime = spktime;
   spktime = systime;
@@ -574,9 +520,8 @@ Clamp::countspikes()
     }
 }
 
-void
-Clamp::print()
-{
+void Clamp::print() {
+/*
 #if 1
   QPrinter printer;
 #else
@@ -619,11 +564,10 @@ Clamp::print()
         }
       splot->print(printer, filter);
     }
+*/
 }
 
-void
-Clamp::exportSVG()
-{
+void Clamp::exportSVG() {
   QString fileName = "FI.svg";
 
 #if QT_VERSION < 0x040000
@@ -662,22 +606,16 @@ Clamp::exportSVG()
 #endif
 }
 
-void
-Clamp::togglerandom(bool on)
-{
+void Clamp::togglerandom(bool on) {
   randomize = on;
 }
 
-void
-Clamp::toggleFIplot(bool on)
-{
+void Clamp::toggleFIplot(bool on) {
   plotFI = on;
 }
 
-bool
-Clamp::OpenFile(QString FName)
-{
-  dataFile.setName(FName);
+bool Clamp::OpenFile(QString FName) {
+  dataFile.setFileName(FName);
   if (dataFile.exists())
     {
       switch (QMessageBox::warning(this, "Current Clamp", tr(
@@ -686,13 +624,13 @@ Clamp::OpenFile(QString FName)
         {
       case 0: // overwrite
         dataFile.remove();
-        if (!dataFile.open(IO_Raw | IO_WriteOnly))
+        if (!dataFile.open( QIODevice::Unbuffered | QIODevice::WriteOnly))
           {
             return false;
           }
         break;
       case 1: // append
-        if (!dataFile.open(IO_Raw | IO_WriteOnly | IO_Append))
+        if (!dataFile.open( QIODevice::Unbuffered | QIODevice::WriteOnly | QIODevice::Append))
           {
             return false;
           }
@@ -704,11 +642,11 @@ Clamp::OpenFile(QString FName)
     }
   else
     {
-      if (!dataFile.open(IO_Raw | IO_WriteOnly))
+      if (!dataFile.open( QIODevice::Unbuffered | QIODevice::WriteOnly ))
         return false;
     }
   stream.setDevice(&dataFile);
-  stream.setPrintableData(false); // write binary
-  printf("File opened: %s\n", FName.latin1());
+//  stream.setPrintableData(false); // write binary
+  printf("File opened: %s\n", FName.toStdString().data());
   return true;
 }
