@@ -5,7 +5,9 @@
 
 ![Current Clamp GUI](current-clamp.png)
 
+<!--start-->
 This plugin allows you to deliver a protocol for current step or current ramp inputs. You can randomize the order of amplitudes used and repeat the entire protocol a certain number of times. For current step inputs, you can also choose to plot the f-I curve as it is generated. For each complete cycle through all the command currents, the plot symbol will change. The firing rate is computed by taking the reciprocal of the average ISI detected during a command input. Plotting the f-I curve will also enable buttons that allow you to perform a linear regression, print the plot, save a screenshot in SVG format, or save the data points. Only the data points generated in the last run are saved and you can append them to an existing file. The linear regression is performed on ALL data points in the plot, not just those generated in the last run. If you add points to the plot and perform another regression, you will get another line. Zoom in on the plot by clicking and dragging with the mouse. Middle click to go back to the previous zoom. All the data points and coefficients and statistics for each regression are printed to the terminal.
+<!--end-->
 
 ####Usage/Dependencies/Installation:
 
