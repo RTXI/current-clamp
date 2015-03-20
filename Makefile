@@ -1,27 +1,29 @@
-PLUGIN_NAME = current_clamp
+PLUGIN_NAME = CClamp4
 
-HEADERS = current-clamp.h\
-          /usr/local/lib/rtxi_includes/scatterplot.h\
-          /usr/local/lib/rtxi_includes/incrementalplot.h\
-          /usr/local/lib/rtxi_includes/basicplot.h\
-          /usr/local/lib/rtxi_includes/scrollzoomer.h\
-			 /usr/local/lib/rtxi_includes/runningstat.h\
-			 /usr/local/lib/rtxi_includes/scrollbar.h\
+HEADERS = CClamp4.h\
+    include/runningstat.h\
+    include/basicplot.h\
+    include/scatterplot.h\
+    include/incrementalplot.h\
+    include/scrollbar.h\
+    include/scrollzoomer.h\
+    include/RTXIprintfilter.h
 
-SOURCES = current-clamp.cpp \
-			 moc_current-clamp.cpp\
-			 /usr/local/lib/rtxi_includes/scatterplot.cpp\
-			 /usr/local/lib/rtxi_includes/incrementalplot.cpp\
-			 /usr/local/lib/rtxi_includes/basicplot.cpp\
-			 /usr/local/lib/rtxi_includes/scrollzoomer.cpp\
-			 /usr/local/lib/rtxi_includes/scrollbar.cpp\
-			 /usr/local/lib/rtxi_includes/moc_scatterplot.cpp\
-			 /usr/local/lib/rtxi_includes/moc_incrementalplot.cpp\
-			 /usr/local/lib/rtxi_includes/moc_basicplot.cpp\
-			 /usr/local/lib/rtxi_includes/moc_scrollzoomer.cpp\
-			 /usr/local/lib/rtxi_includes/moc_scrollbar.cpp\
-			 /usr/local/lib/rtxi_includes/runningstat.cpp\
-			 
+SOURCES = CClamp4.cpp \
+    moc_CClamp4.cpp\
+    include/runningstat.cpp\
+    include/basicplot.cpp\
+    include/scatterplot.cpp\
+    include/incrementalplot.cpp\
+    include/scrollbar.cpp\
+    include/scrollzoomer.cpp\
+    include/moc_runningstat.cpp\
+    include/moc_scatterplot.cpp\
+    include/moc_incrementalplot.cpp\
+    include/moc_scrollbar.cpp\
+    include/moc_scrollzoomer.cpp\
+    include/moc_basicplot.cpp
+
 LIBS = -lqwt -lgsl
 
 ### Do not edit below this line ###
