@@ -224,9 +224,9 @@ void Clamp::customizeGUI(void) {
 
 	QPushButton *clearButton = new QPushButton("&Clear");
 	QPushButton *linearfitButton = new QPushButton("Linear &Fit");
-	QPushButton *savePlotButton = new QPushButton("Save Screenshot");
+	QPushButton *savePlotButton = new QPushButton("Screenshot");
 	QPushButton *printButton = new QPushButton("Print");
-	QPushButton *saveDataButton = new QPushButton("Save FI Data");
+	QPushButton *saveDataButton = new QPushButton("Save Data");
 	plotBoxLayout->addWidget(clearButton);
 	plotBoxLayout->addWidget(linearfitButton);
 	plotBoxLayout->addWidget(printButton);
@@ -252,7 +252,7 @@ void Clamp::customizeGUI(void) {
 
 //	plotBox->hide();
 //	eqnLine->hide();
-	splot->setFixedSize(540, 300);
+	splot->setFixedSize(450, 270);
 //	splot->hide();
 	customlayout->addWidget(plotBox, 0, 1, 1, 1);
 	customlayout->addWidget(eqnLine, 10, 1, 1, 1);
@@ -275,7 +275,7 @@ void Clamp::customizeGUI(void) {
 	rampButton->setToolTip("Set mode to triangular current ramps");
 	customlayout->addWidget(modeBox, 0, 0);
 
-	QVBoxLayout *optionBoxLayout = new QVBoxLayout;
+	QHBoxLayout *optionBoxLayout = new QHBoxLayout;
 	QCheckBox *randomCheckBox = new QCheckBox("Randomize");
 	optionBoxLayout->addWidget(randomCheckBox);
 	QCheckBox *plotFICheckBox = new QCheckBox("Plot FI Curve");
@@ -392,7 +392,7 @@ void Clamp::saveFIData() {
 		if (!fileNames.isEmpty()) { fileName = fileNames.takeFirst(); };
 
 		if (OpenFile(fileName)) {
-			stream.setPrintableData(true);
+//			stream.setPrintableData(true);
 			for (int i = 0; i < cyclecount * nstep + stepcount; i++) {
 				stream << (double) arrFIamp[i] << (double) arrFIHz[i];
 			}
@@ -517,7 +517,7 @@ void Clamp::print() {
 		 filter.color(Qt::white, QwtPlotPrintFilter::CurveSymbol);
 		}
 */
-	splot->print(printer, filter);
+//	splot->print(printer, filter);
 	}
 }
 
@@ -534,7 +534,7 @@ void Clamp::exportSVG() {
 		QwtPainter::setSVGMode(true);
 		QPicture picture;
 		QPainter p(&picture);
-		splot->print(&p, QRect(0, 0, 800, 600));
+//		splot->print(&p, QRect(0, 0, 800, 600));
 		p.end();
 		picture.save(fileName, "svg");
 	}
@@ -549,7 +549,7 @@ void Clamp::exportSVG() {
 		QSvgGenerator generator;
 		generator.setFileName(fileName);
 		generator.setSize(QSize(800, 600));
-		splot->print(generator);
+//		splot->print(generator);
 	}
 #endif
 #endif
@@ -589,7 +589,7 @@ bool Clamp::OpenFile(QString FName) {
 		if (!dataFile.open( QIODevice::Unbuffered | QIODevice::WriteOnly )) return false;
 	}
 	stream.setDevice(&dataFile);
-	stream.setPrintableData(false); // write binary
+//	stream.setPrintableData(false); // write binary
 	printf("File opened: %s\n", FName.toStdString().data());
 	return true;
 }
