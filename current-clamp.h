@@ -100,7 +100,8 @@ class Clamp : public DefaultGUIModel {
 		void countspikes();
 		bool OpenFile(QString);
 		QFile dataFile;
-		QDataStream stream;
+		QDataStream binaryStream;
+		QTextStream textStream;
 
 	private slots:
 		void togglerandom(bool);

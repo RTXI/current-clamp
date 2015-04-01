@@ -394,7 +394,7 @@ void Clamp::saveFIData() {
 		if (OpenFile(fileName)) {
 //			stream.setPrintableData(true);
 			for (int i = 0; i < cyclecount * nstep + stepcount; i++) {
-				stream << (double) arrFIamp[i] << (double) arrFIHz[i];
+				textStream << (double) arrFIamp[i] << (double) arrFIHz[i];
 			}
 			dataFile.close();
 			printf("File closed.\n");
@@ -588,7 +588,7 @@ bool Clamp::OpenFile(QString FName) {
 	else {
 		if (!dataFile.open( QIODevice::Unbuffered | QIODevice::WriteOnly )) return false;
 	}
-	stream.setDevice(&dataFile);
+	binaryStream.setDevice(&dataFile);
 //	stream.setPrintableData(false); // write binary
 	printf("File opened: %s\n", FName.toStdString().data());
 	return true;
