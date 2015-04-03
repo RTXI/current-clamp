@@ -21,6 +21,8 @@
 #include <runningstat.h>
 //#include <RTXIprintfilter.h>
 #include <QtGui>
+#include <QMessageBox>
+#include <QFileInfo>
 
 class Clamp : public DefaultGUIModel {
 

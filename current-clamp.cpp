@@ -21,23 +21,30 @@
  * plot an F-I curve.
  */
 
-#include <current-clamp.h>
+#include "current-clamp.h"
 #include <algorithm>
 #include <main_window.h>
 #include <QtGui>
+#include <QtGlobal>
 
 #if QT_VERSION >= 0x040300
 #ifdef QT_SVG_LIB
+#include <QSvgGenerator>
 #endif
 #endif
 #if QT_VERSION >= 0x040000
+#include <QPrintDialog>
+#include <QFileInfo>
 #else
+#include <qwt_painter.h>
 #endif
 
 #include <time.h>
 #include <gsl/gsl_fit.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_statistics_double.h>
+
+#include <iostream>
 
 extern "C" Plugin::Object *createRTXIPlugin(void) {
 	return new Clamp();
@@ -518,38 +525,51 @@ void Clamp::print() {
 		}
 */
 //	splot->print(printer, filter);
+	QwtPlotRenderer *renderer = new QwtPlotRenderer;
+	renderer->renderTo(splot, printer);
 	}
 }
 
 void Clamp::exportSVG() {
 	QString fileName = "FI.svg";
 
+std::cout<<"flag 0"<<std::endl;
+
 #if QT_VERSION < 0x040000
+std::cout<<"flag 1"<<std::endl;
 
 #ifndef QT_NO_FILEDIALOG
+std::cout<<"flag 2"<<std::endl;
 	fileName = QFileDialog::getSaveFileName("FI.svg", "SVG Documents (*.svg)",	this);
 #endif
+std::cout<<"flag 3"<<std::endl;
 	if (!fileName.isEmpty()) {
 		// enable workaround for Qt3 misalignments
 		QwtPainter::setSVGMode(true);
 		QPicture picture;
 		QPainter p(&picture);
 //		splot->print(&p, QRect(0, 0, 800, 600));
+		QwtPlotRenderer *renderer = new QwtPlotRenderer;
+		renderer->renderTo(splot, p, QRect(0, 0, 800, 600));
 		p.end();
 		picture.save(fileName, "svg");
 	}
 
 #elif QT_VERSION >= 0x040300
+std::cout<<"flag 4"<<std::endl;
 #ifdef QT_SVG_LIB
+std::cout<<"flag 5"<<std::endl;
 #ifndef QT_NO_FILEDIALOG
-		fileName = QFileDialog::getSaveFileName(
-		this, "Export File Name", QString(), "SVG Documents (*.svg)");
+std::cout<<"flag 6"<<std::endl;
+		fileName = QFileDialog::getSaveFileName(this, "Export File Name", 
+		                                        QString(), "SVG Documents (*.svg)");
 #endif
+std::cout<<"flag 7"<<std::endl;
 	if ( !fileName.isEmpty() ) {
 		QSvgGenerator generator;
 		generator.setFileName(fileName);
 		generator.setSize(QSize(800, 600));
-//		splot->print(generator);
+		splot->print(generator);
 	}
 #endif
 #endif
