@@ -33,8 +33,9 @@
 #endif
 #endif
 #if QT_VERSION >= 0x040000
-#include <QPrintDialog>
 #include <QFileInfo>
+#include <QtPrintSupport/QPrintDialog>
+#include <QtPrintSupport/QPrinter>
 #else
 #include <qwt_painter.h>
 #endif
