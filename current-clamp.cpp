@@ -24,21 +24,13 @@
 #include "current-clamp.h"
 #include <algorithm>
 #include <main_window.h>
-#include <QtGui>
-#include <QtGlobal>
+//#include <QtGui>
+//#include <QtGlobal>
 
-#if QT_VERSION >= 0x040300
-#ifdef QT_SVG_LIB
 #include <QSvgGenerator>
-#endif
-#endif
-#if QT_VERSION >= 0x040000
 #include <QFileInfo>
 #include <QtPrintSupport/QPrintDialog>
 #include <QtPrintSupport/QPrinter>
-#else
-#include <qwt_painter.h>
-#endif
 
 #include <time.h>
 #include <gsl/gsl_fit.h>
