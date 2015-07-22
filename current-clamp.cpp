@@ -250,10 +250,10 @@ void Clamp::customizeGUI(void) {
 	linearfitButton->setToolTip("Perform linear least-squares regression");
 	printButton->setToolTip("Print plot");
 
-//	plotBox->hide();
-//	eqnLine->hide();
-	splot->setFixedSize(450, 270);
-//	splot->hide();
+	plotBox->hide();
+	eqnLine->hide();
+//	splot->setMinimumSize(450, 270);
+	splot->hide();
 	customlayout->addWidget(plotBox, 0, 1, 1, 1);
 	customlayout->addWidget(eqnLine, 10, 1, 1, 1);
 	customlayout->addWidget(splot, 1, 1, 3, 1);
@@ -270,24 +270,28 @@ void Clamp::customizeGUI(void) {
 	QRadioButton *rampButton = new QRadioButton("Ramp"); 
 	modeBoxLayout->addWidget(rampButton);
 	modeButtons->addButton(rampButton);
+	stepButton->setChecked(true);
 	QObject::connect(modeButtons,SIGNAL(buttonClicked(int)),this,SLOT(updateClampMode(int)));
 	stepButton->setToolTip("Set mode to current steps");
 	rampButton->setToolTip("Set mode to triangular current ramps");
 	customlayout->addWidget(modeBox, 0, 0);
 
 	QHBoxLayout *optionBoxLayout = new QHBoxLayout;
+	QGroupBox *optionBoxGroup = new QGroupBox;
 	QCheckBox *randomCheckBox = new QCheckBox("Randomize");
 	optionBoxLayout->addWidget(randomCheckBox);
 	QCheckBox *plotFICheckBox = new QCheckBox("Plot FI Curve");
 	optionBoxLayout->addWidget(plotFICheckBox);
 	QObject::connect(randomCheckBox,SIGNAL(toggled(bool)),this,SLOT(togglerandom(bool)));
-	QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),eqnLine,SLOT(setShown(bool)));
-	QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),splot,SLOT(setShown(bool)));
-	QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),plotBox,SLOT(setShown(bool)));
+	QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),eqnLine,SLOT(setVisible(bool)));
+	QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),splot,SLOT(setVisible(bool)));
+	QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),plotBox,SLOT(setVisible(bool)));
 	QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),this,SLOT(toggleFIplot(bool)));
+	QObject::connect(plotFICheckBox,SIGNAL(toggled(bool)),this,SLOT(resizeMe()));
 	randomCheckBox->setToolTip("Randomize input amplitudes within a cycle");
 	plotFICheckBox->setToolTip("Show/Hide FI plot area");
-	customlayout->addLayout(optionBoxLayout, 3, 0);
+	optionBoxGroup->setLayout(optionBoxLayout);
+	customlayout->addWidget(optionBoxGroup, 3, 0);
 
 	QObject::connect(DefaultGUIModel::pauseButton,SIGNAL(toggled(bool)),savePlotButton,SLOT(setEnabled(bool)));
 	QObject::connect(DefaultGUIModel::pauseButton,SIGNAL(toggled(bool)),printButton,SLOT(setEnabled(bool)));
@@ -562,7 +566,7 @@ std::cout<<"flag 7"<<std::endl;
 		QSvgGenerator generator;
 		generator.setFileName(fileName);
 		generator.setSize(QSize(800, 600));
-		splot->print(generator);
+//		splot->print(generator);
 	}
 #endif
 #endif
