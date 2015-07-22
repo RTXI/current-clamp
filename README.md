@@ -11,7 +11,7 @@ This plugin allows you to deliver a protocol for current step or current ramp in
 
 ####Usage/Dependencies/Installation:
 
-The include folder (containing the ScatterPlot, IncrementalPlot, ScrollBar, ScrollZoomer, and RunningStat classes) should be located on the same directory level as CClamp3. The [GPL GSL library](http://www.gnu.org/software/gsl/) is used to perform a linear regression on data points. If you installed RTXI from a Live CD, you should already have GSL. If you did a manual installation of RTXI, you should install GSL using your Linux distribution’s package manager. In Ubuntu, the package manager can be found in the toolbar under Administration. Alternatively, you can install via the apt repository by running:
+The [GPL GSL library](http://www.gnu.org/software/gsl/) is used to perform a linear regression on data points. If you installed RTXI from a Live CD, you should already have GSL. If you did a manual installation of RTXI, you should install GSL using your Linux distribution’s package manager. In Ubuntu, the package manager can be found in the toolbar under Administration. Alternatively, you can install via the apt repository by running:
 
 ````
 $ sudo apt-get install libgsl0-dev
