@@ -216,6 +216,7 @@ void Clamp::update(DefaultGUIModel::update_flags_t flag) {
 void Clamp::customizeGUI(void) {
 
 	QGridLayout *customlayout = DefaultGUIModel::getLayout(); 
+	customlayout->setColumnStretch(1,1);
 
 	//overall GUI layout with a "horizontal box" copied from DefaultGUIModel
 	QGroupBox *plotBox = new QGroupBox("FI Plot");
