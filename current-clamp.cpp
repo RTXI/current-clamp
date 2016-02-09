@@ -17,20 +17,25 @@
  */
 
 /*
- * This module allows you to deliver current clamp stimuli. With the SpikeDetect module it can also
- * plot an F-I curve.
+ * This module allows you to deliver current clamp stimuli. With the Spike 
+ * Detector module it can also plot an F-I curve.
  */
 
 #include "current-clamp.h"
 #include <algorithm>
 #include <main_window.h>
-//#include <QtGui>
-//#include <QtGlobal>
 
 #include <QSvgGenerator>
 #include <QFileInfo>
-#include <QtPrintSupport/QPrintDialog>
-#include <QtPrintSupport/QPrinter>
+#include <QtGlobal>
+
+#if QT_VERSION >= 0x050000
+	#include <QtPrintSupport/QPrintDialog>
+	#include <QtPrintSupport/QPrinter>
+#else
+	#include <QPrintDialog>
+	#include <QPrinter>
+#endif
 
 #include <time.h>
 #include <gsl/gsl_fit.h>
