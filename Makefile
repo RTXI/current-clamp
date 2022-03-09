@@ -7,7 +7,7 @@ HEADERS = current-clamp.h\
 SOURCES = current-clamp.cpp \
           moc_current-clamp.cpp\
 			 
-LIBS = -lqwt -lgsl -lrtplot
+LIBS = -lqwt-qt5 -lgsl -lrtplot
 
 ### Do not edit below this line ###
 
